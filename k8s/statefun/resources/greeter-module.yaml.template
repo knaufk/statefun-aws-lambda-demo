@@ -1,0 +1,77 @@
+---
+# Source: statefun-aws-demo/templates/greeter-module.yaml
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: greeter-module
+  namespace: statefun
+  labels:
+    app: statefun
+data:
+  module.yaml: |+
+    version: "3.0"
+    module:
+      meta:
+        type: remote
+      spec:
+        endpoints:
+          - endpoint:
+              meta:
+                kind: http
+              spec:
+                functions: com.knaufk.fns/*
+                urlPathTemplate: https://${GATEWAY_ID}.execute-api.${AWS_REGION}.amazonaws.com/{function.name}
+                maxNumBatchRequests: 500
+                timeouts:
+                  call: 2min
+        ingresses:
+          - ingress:
+              meta:
+                type: io.statefun.kinesis/ingress
+                id: com.knaufk/names
+              spec:
+                awsRegion:
+                  type: specific
+                  id: eu-west-1
+                awsCredentials:
+                  type: default
+                startupPosition:
+                  type: latest
+                streams:
+                  - stream: names
+                    valueType: com.knaufk/User
+                    targets:
+                      - com.knaufk.fns/user
+                clientConfigProperties:
+                 - SocketTimeout: 9999
+                 - MaxConnections: 15
+        egresses:
+          - egress:
+              meta:
+                type: io.statefun.kinesis/egress
+                id: com.knaufk/greets
+              spec:
+                awsRegion:
+                  type: specific
+                  id: eu-west-1
+                awsCredentials:
+                  type: default
+                maxOutstandingRecords: 9999
+                clientConfigProperties:
+                  - ThreadingModel: POOLED
+                  - ThreadPoolSize: 10

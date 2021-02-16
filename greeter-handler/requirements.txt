@@ -1,0 +1,1 @@
+apache-flink-statefun==3.0.0

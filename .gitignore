@@ -1,0 +1,5 @@
+*/.terraform/*
+*/.terraform.lock.hcl
+.terraform.lock.hcl
+terraform.tfstate.backup
+kubeconfig_statefun-eks
