@@ -215,3 +215,34 @@ policy = <<EOF
 }
 EOF
 }
+
+###########
+#   ECR   #
+###########
+
+resource "aws_ecr_repository" "statefun" {
+  name                 = "statefun"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+resource "aws_ecr_repository" "greeter-generator" {
+  name                 = "greeter-generator"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+resource "aws_ecr_repository" "greeter" {
+  name                 = "greeter"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
