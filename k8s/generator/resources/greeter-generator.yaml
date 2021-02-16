@@ -39,5 +39,5 @@ spec:
               memory: 1G
               cpu: 1
           command: ["java"]
-          args: ["-cp", "/usr/greeter-generator-0.0.1-fat.jar", "com.github.knaufk.statefun.kinesis.UserKinesisProducer", "names", "names", "eu-west-1"]
+          args: ["-cp", "/usr/app.jar", "com.github.knaufk.statefun.kinesis.UserKinesisProducer", "names", "greetings", "eu-west-1"]
 
