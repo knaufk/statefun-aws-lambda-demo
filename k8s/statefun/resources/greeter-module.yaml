@@ -19,6 +19,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: greeter-module
+  namespace: statefun
   labels:
     app: statefun
 data:
@@ -35,31 +36,43 @@ data:
               spec:
                 typename:
                   namespace: com.knaufk.fns
-                urlPathTemplate: http://{typename.function}:5000/statefun
-                #urlPathTemplate: http://greeter:5000/statefun
+                urlPathTemplate: http://{typename.function}.{typename.function}.svc:5000/statefun
                 maxNumBatchRequests: 500
                 timeouts:
                   call: 2min
         ingresses:
           - ingress:
               meta:
-                type: statefun.kafka.io/routable-protobuf-ingress
-                id: example/names
+                type: statefun.kinesis.io/routable-protobuf-ingress
+                id: com.knaufk/names
               spec:
-                address: kafka-broker:9092
-                consumerGroupId: my-group-id
-                topics:
-                  - topic: names
-                    typeUrl: com.googleapis/example.GreetRequest
+                awsRegion:
+                  type: specific
+                  id: eu-west-1
+                awsCredentials:
+                  type: default
+                startupPosition:
+                  type: earliest
+                streams:
+                  - stream: names
+                    typeUrl: com.knaufk/User
                     targets:
                       - com.knaufk.fns/greeter
+                clientConfigProperties:
+                 - SocketTimeout: 9999
+                 - MaxConnections: 15
         egresses:
           - egress:
               meta:
-                type: statefun.kafka.io/generic-egress
+                type: statefun.kinesis.io/generic-egress
                 id: com.knaufk/greets
               spec:
-                address: kafka-broker:9092
-                deliverySemantic:
-                  type: exactly-once
-                  transactionTimeoutMillis: 100000
+                awsRegion:
+                  type: specific
+                  id: eu-west-1
+                awsCredentials:
+                  type: default
+                maxOutstandingRecords: 9999
+                clientConfigProperties:
+                  - ThreadingModel: POOLED
+                  - ThreadPoolSize: 10
