@@ -36,7 +36,7 @@ data:
               spec:
                 typename:
                   namespace: com.knaufk.fns
-                urlPathTemplate: https://f9974efi0m.execute-api.eu-west-1.amazonaws.com/
+                urlPathTemplate: https://nqrnb6kni3.execute-api.eu-west-1.amazonaws.com/{typename.function}
                 maxNumBatchRequests: 500
                 timeouts:
                   call: 2min
