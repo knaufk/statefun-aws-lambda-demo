@@ -36,7 +36,7 @@ data:
               spec:
                 typename:
                   namespace: com.knaufk.fns
-                urlPathTemplate: http://{typename.function}.{typename.function}.svc:5000/statefun
+                urlPathTemplate: https://f9974efi0m.execute-api.eu-west-1.amazonaws.com/
                 maxNumBatchRequests: 500
                 timeouts:
                   call: 2min
@@ -52,7 +52,7 @@ data:
                 awsCredentials:
                   type: default
                 startupPosition:
-                  type: earliest
+                  type: latest
                 streams:
                   - stream: names
                     typeUrl: com.knaufk/User
