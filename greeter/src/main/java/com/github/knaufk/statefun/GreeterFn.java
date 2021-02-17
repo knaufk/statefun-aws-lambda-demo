@@ -16,6 +16,9 @@ final class GreeterFn implements StatefulFunction {
   static final ValueSpec<Integer> SEEN =
       ValueSpec.named("seen").thatExpireAfterWrite(Duration.ofDays(7)).withIntType();
 
+  static final ValueSpec<Long> LAST_SEEN =
+      ValueSpec.named("lastSeenMillis").thatExpireAfterWrite(Duration.ofDays(7)).withLongType();
+
   static final TypeName GREETS_EGRESS = TypeName.typeNameFromString("com.knaufk/greets");
 
   @Override
@@ -24,6 +27,8 @@ final class GreeterFn implements StatefulFunction {
         () -> {
           var storage = context.storage();
           var seen = storage.get(SEEN).orElse(0);
+          var lastTime = storage.get(LAST_SEEN).orElse(0L);
+          var now = System.currentTimeMillis();
 
           if (!message.is(MyCustomTypes.USER_TYPE)) {
             throw new IllegalStateException("Not a user type?!");
@@ -35,10 +40,18 @@ final class GreeterFn implements StatefulFunction {
               KinesisEgressMessage.forEgress(GREETS_EGRESS)
                   .withStream("greetings")
                   .withUtf8PartitionKey(name)
-                  .withUtf8Value("Hello " + name + ", for the " + seen + "th time!")
+                  .withUtf8Value(
+                      "Hello "
+                          + name
+                          + ", for the "
+                          + seen
+                          + "th time! Last time was "
+                          + (now - lastTime)
+                          + "ago.")
                   .build());
 
           storage.set(SEEN, seen + 1);
+          storage.set(LAST_SEEN, now);
         });
   }
 }

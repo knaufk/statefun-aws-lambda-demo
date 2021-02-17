@@ -1,12 +1,11 @@
 package com.github.knaufk.statefun;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import io.undertow.util.Headers;
 import java.io.*;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
-
-import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import io.undertow.util.Headers;
 import org.apache.flink.statefun.sdk.java.StatefulFunctionSpec;
 import org.apache.flink.statefun.sdk.java.StatefulFunctions;
 import org.apache.flink.statefun.sdk.java.handler.RequestReplyHandler;
@@ -24,6 +23,7 @@ public class GreeterHandler implements RequestStreamHandler {
     StatefulFunctionSpec spec =
         StatefulFunctionSpec.builder(GreeterFn.TYPE)
             .withValueSpec(GreeterFn.SEEN)
+            .withValueSpec(GreeterFn.LAST_SEEN)
             .withSupplier(GreeterFn::new)
             .build();
 
@@ -48,7 +48,7 @@ public class GreeterHandler implements RequestStreamHandler {
   private Slice unwrapSliceFromJsonRequest(InputStream inputStream)
       throws IOException, ParseException {
     JSONParser parser = new JSONParser();
-    try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
       JSONObject event = (JSONObject) parser.parse(reader);
       System.out.println(event);
       String base64Input = (String) event.get("body");
@@ -72,7 +72,7 @@ public class GreeterHandler implements RequestStreamHandler {
     responseJson.put("headers", headerJson);
     responseJson.put("multiValueHeaders", multiValueHeaders);
 
-    try (OutputStreamWriter writer  = new OutputStreamWriter(outputStream, "UTF-8")) {
+    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8")) {
       String str = responseJson.toString();
       System.out.println(str);
       writer.write(str);
