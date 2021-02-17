@@ -1,4 +1,4 @@
-package com.example.starter;
+package com.github.knaufk.statefun;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

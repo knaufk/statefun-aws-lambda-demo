@@ -1,4 +1,4 @@
-package com.example.starter;
+package com.github.knaufk.statefun;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.statefun.sdk.java.TypeName;

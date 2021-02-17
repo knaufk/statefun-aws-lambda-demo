@@ -1,4 +1,4 @@
-package com.example.starter;
+package com.github.knaufk.statefun;
 
 import static io.undertow.UndertowOptions.ENABLE_HTTP2;
 
