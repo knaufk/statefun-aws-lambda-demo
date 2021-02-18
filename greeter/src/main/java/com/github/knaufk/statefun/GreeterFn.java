@@ -47,7 +47,7 @@ final class GreeterFn implements StatefulFunction {
                           + seen
                           + "th time! Last time was "
                           + (now - lastTime)
-                          + "ago.")
+                          + "ms ago.")
                   .build());
 
           storage.set(SEEN, seen + 1);
